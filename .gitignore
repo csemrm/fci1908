@@ -1,0 +1,14 @@
+.DS_Store
+build.log
+build
+npm-debug.log
+tmp
+.map*.merge-left*
+*.merge-right*
+*.mine
+*.prej
+*.working
+*/.git/*
+.svn
+_svn
+svn-commit*.tmp

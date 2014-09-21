@@ -1,0 +1,7 @@
+<Alloy>
+	<View id="loadingPopup">
+		<View id="background"></View>
+		<Require id="loading" type="widget" src="com.appcelerator.loading"/>
+		<Label id="title">Loading ...</Label>
+	</View>
+</Alloy>
