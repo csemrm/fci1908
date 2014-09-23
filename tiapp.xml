@@ -3,10 +3,10 @@
     <id>it.mari.daniele.fcinter1908</id>
     <!--<id>it.mari.daniele.fcinter1908</id>-->
     <name>FC Inter 1908</name>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
     <publisher>LeonArts</publisher>
     <url>http://www.leonarts.it</url>
-    <description>undefined</description>
+    <description/>
     <copyright>2014 by LeonArts</copyright>
     <icon>appicon.png</icon>
     <fullscreen>false</fullscreen>
