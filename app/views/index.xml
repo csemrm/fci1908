@@ -18,7 +18,6 @@
 	        	<ScrollView id="newsDetail">
 	        		<Label id="newsTitle" />
 	        		<Label id="newsAuthor" />
-	        		<ImageView id="newsImage" />
 	        		<Label id="newsFonte" />
 	        		<Label id="newsSummary" />
 	        		<Label id="newsVideo" onClick="onVideoClick">VIDEO</Label>

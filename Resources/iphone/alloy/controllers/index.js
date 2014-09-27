@@ -27,21 +27,24 @@ function Controller() {
     }
     function setCurrentDetailView(news) {
         currentNews = news;
-        $.newsDetail.remove($.newsTitle);
-        $.newsDetail.remove($.newsAuthor);
-        $.newsDetail.remove($.newsImage);
-        $.newsDetail.remove($.newsSummary);
-        $.newsDetail.remove($.newsContent);
-        $.newsDetail.remove($.newsFonte);
-        $.newsDetail.remove($.newsVideo);
+        $.newsDetail.removeAllChildren();
         $.newsTitle.text = news.title || "";
         $.newsAuthor.text = String.format("%s %s %s", news.detail.author || "", news.day || "", news.hour || "");
-        $.newsImage.image = news.detail.photo || null;
-        $.newsImage.setWidth("90%");
+        var newsImage = Ti.UI.createImageView({
+            width: "90%",
+            left: "5%",
+            top: 5
+        });
+        if (news.detail.photo) {
+            Ti.API.info("Image: " + news.detail.photo);
+            Alloy.Managers.ConnectionManager.lazyLoadImage(news.detail.photo, newsImage, function() {
+                newsImage.setWidth("90%");
+            });
+        }
         $.newsContent.text = news.detail.content || "Nessun contenuto da visualizzare";
         $.newsDetail.add($.newsTitle);
         $.newsDetail.add($.newsAuthor);
-        $.newsDetail.add($.newsImage);
+        $.newsDetail.add(newsImage);
         if (news.detail.fonte) {
             $.newsFonte.text = "Fonte: " + news.detail.fonte;
             $.newsDetail.add($.newsFonte);
@@ -56,6 +59,14 @@ function Controller() {
             $.newsVideo.url = news.detail.video;
         } else $.newsVideo.url = null;
         $.newsDetail.add($.newsContent);
+        _.each(news.detail.images, function(url) {
+            $.newsDetail.add(Ti.UI.createImageView({
+                width: "90%",
+                left: "5%",
+                top: 5,
+                image: url
+            }));
+        });
         $.optionsButton.visible = false;
         $.searchButton.visible = false;
         $.backButton.visible = true;
@@ -242,14 +253,19 @@ function Controller() {
                     backgroundSelectedColor: "#24289f",
                     selectedBackgroundColor: "#24289f"
                 });
-                row.add(Ti.UI.createImageView({
-                    image: news.image,
-                    top: 10,
-                    left: 10,
-                    width: 80,
-                    height: 80,
-                    touchEnabled: false
-                }));
+                try {
+                    var thumb = Ti.UI.createImageView({
+                        top: 10,
+                        left: 10,
+                        width: 80,
+                        height: 80,
+                        touchEnabled: false
+                    });
+                    Alloy.Managers.ConnectionManager.lazyLoadImage(news.image, thumb);
+                    row.add(thumb);
+                } catch (ex) {
+                    Ti.API.error(ex.message);
+                }
                 row.add(Ti.UI.createLabel({
                     color: "#A1ABB5",
                     font: Alloy.Globals.Fonts.helveticaCondensedBold12,
@@ -606,13 +622,6 @@ function Controller() {
         id: "newsAuthor"
     });
     $.__views.newsDetail.add($.__views.newsAuthor);
-    $.__views.newsImage = Ti.UI.createImageView({
-        width: "90%",
-        left: "5%",
-        top: 5,
-        id: "newsImage"
-    });
-    $.__views.newsDetail.add($.__views.newsImage);
     $.__views.newsFonte = Ti.UI.createLabel({
         width: "90%",
         height: Ti.UI.SIZE,

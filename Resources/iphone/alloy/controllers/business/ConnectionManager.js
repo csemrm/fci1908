@@ -36,7 +36,7 @@ function Controller() {
             autoRedirect: false,
             onload: function(e) {
                 popup && popup.close();
-                parameters.callback && parameters.callback(e.source.responseText);
+                parameters.callback && (parameters.blob ? parameters.callback(e.source.responseData) : parameters.callback(e.source.responseText));
             },
             onerror: function(e) {
                 popup && popup.close();
@@ -180,6 +180,9 @@ function Controller() {
                     news.title = article.getElementsByTagName("title").item(0).textContent;
                 } catch (e) {}
                 try {
+                    news.url = article.getElementsByTagName("url").item(0).textContent;
+                } catch (e) {}
+                try {
                     news.detail.author = article.getElementsByTagName("author").item(0).textContent;
                 } catch (e) {}
                 try {
@@ -193,6 +196,14 @@ function Controller() {
                 } catch (e) {}
                 try {
                     news.detail.content = Encoder.htmlDecode(article.getElementsByTagName("text").item(0).textContent.replace(/(<([^>]+)>)/gi, "")).trim();
+                } catch (e) {}
+                try {
+                    news.detail.images = [];
+                    var imgs = /<img[^>]+src\s*=\s*"[^"]+"[^>]*>/gim.exec(article.getElementsByTagName("text").item(0).textContent);
+                    _.each(imgs, function(img) {
+                        news.detail.images.push(/<img.*?src="([^"]+)"/.exec(img)[1]);
+                    });
+                    Ti.API.info("images: " + JSON.stringify(news.detail.images));
                 } catch (e) {}
                 try {
                     news.detail.video = article.getElementsByTagName("video").length > 0 ? article.getElementsByTagName("video").item(0).getAttribute("url") : null;
@@ -231,6 +242,25 @@ function Controller() {
             searched: true
         };
     };
+    var lazyLoadImage = function(url, imageView, endCallback) {
+        httpRequest({
+            URI: url,
+            method: "GET",
+            blob: true,
+            callback: function(data) {
+                try {
+                    imageView.image = data;
+                } catch (ex) {
+                    Ti.API.error(ex.message);
+                }
+                endCallback && endCallback();
+            },
+            errorCallback: function(error) {
+                LogManager.error("trackApplication Error: " + error);
+            }
+        });
+    };
+    this.lazyLoadImage = lazyLoadImage;
     this.searchNews = searchNews;
     this.httpRequest = httpRequest;
     this.loadAllNews = loadAllNews;

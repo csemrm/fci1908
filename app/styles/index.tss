@@ -129,11 +129,6 @@
 			backgroundColor : "#FFF",
 			layout : "vertical"
 		},
-			"#newsImage":{
-				width : "90%",
-				left : '5%',
-				top  : 5
-			},
 			"#newsTitle":{
 				width : "90%",
 				left : '5%',
